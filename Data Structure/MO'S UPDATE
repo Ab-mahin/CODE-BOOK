@@ -1,0 +1,86 @@
+#include<bits/stdc++.h>
+using namespace std;
+#define ll long long int
+ 
+const ll N = 1e5 + 9;
+const ll B = 2160;
+ 
+struct query {
+  ll l, r, t, id;
+  bool operator < (const query &x) const {
+    if(l / B == x.l / B) {
+      if(r / B == x.r / B) return t < x.t;
+      return r / B < x.r / B;
+    }
+    return l / B < x.l / B;
+  }
+} Q[N];
+struct upd {
+  ll pos, old, cur;
+} U[N];
+ 
+ll a[N];
+ll cnt[N], f[N], last[N], l, r, t;
+long long res = 0, ans[N];
+inline void add(ll x) {
+  cnt[a[x]]++;
+  res += 1LL * (a[x] * (f[cnt[a[x]]]));
+}
+inline void del(ll x) {
+  res -= 1LL * (a[x] * (f[cnt[a[x]]]));
+  cnt[a[x]]--;
+}
+inline void update(ll pos, ll x) {
+  if (l <= pos && pos <= r) {
+    del(pos);
+    a[pos] = x;
+    add(pos);
+  }
+  else a[pos] = x;
+}
+ 
+int main() {
+  ios_base::sync_with_stdio(0);
+  cin.tie(0);
+ 
+  ll n, q;
+  cin >> n;
+  for (ll i = 1; i <= n; i++) {
+    cin >> a[i];
+    last[i] = a[i];
+  }
+  for(ll i = 1; i <= n; i++){
+  	cin >> f[i];
+  }
+  cin >> q;
+  ll nq = 0, nu = 0;
+  for (ll i = 1; i <= q; i++) {
+    ll ty, l, r;
+    cin >> ty >> l >> r;
+    if (ty == 1) ++nq, Q[nq] = {l, r, nu, nq};
+    else ++nu, U[nu].pos = l, U[nu].old = a[l], U[nu].cur = r, a[l] = r;
+  }
+  sort(Q + 1, Q + nq + 1);
+  t = nu, l = 1, r = 0;
+  for (ll i = 1; i <= nq; i++) {
+    ll L = Q[i].l, R = Q[i].r, T = Q[i].t;
+    while(t < T) t++, update(U[t].pos, U[t].cur);
+    while(t > T) update(U[t].pos, U[t].old), t--;
+    
+    if(R < l) {
+      while(l > L) add(--l);
+      while(l < L) del(l++);
+      while(r < R) add(++r);
+      while(r > R) del(r--);
+    } else {
+      while(r < R) add(++r);
+      while(r > R) del(r--);
+      while(l > L) add(--l);
+      while(l < L) del(l++);
+    }
+    
+    ans[Q[i].id] = res;
+  }
+  for (ll i = 1; i <= nq; i++) cout << ans[i] << '\n';
+  return 0;
+}
