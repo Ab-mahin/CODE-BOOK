@@ -56,3 +56,17 @@ int main(){
 
     return 0;
 }
+
+
+//For Linux or Mac
+
+// #include <sys/resource.h>
+// void stack_increase(){
+//     struct rlimit rl;
+//     const rlim_t kStackSize = 512L * 1024L * 1024L;
+//     assert(!getrlimit(RLIMIT_STACK, &rl));
+//     rl.rlim_cur = kStackSize;
+//     assert(!setrlimit(RLIMIT_STACK, &rl));
+// }
+
+
